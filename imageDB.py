@@ -4,21 +4,22 @@
 from PIL import Image
 
 from os import listdir
-
-from os import listdir
 from os.path import isfile, join
+
 
 class StoredImage:
     def __init__(self, imgString):
-        imgStringSplit = imgString.split(".")
+        self.imgStringSplit = imgString.split(".")
         self.image = imgString
-        self.thumbnail = "thumbnails/" + imgStringSplit[0] + ".thumbnail." + imgStringSplit[1]
+        self.thumbnail = self.getThumbnailString()
+
 
         self.tagList = []
 
         #testing
         print(self.image)
         print(self.thumbnail)
+        print()
 
     def addTag(self, tagString):
         self.tagList.append(tagString.capitalize())
@@ -33,6 +34,14 @@ class StoredImage:
 
     def getTags(self):
         return self.tagList
+
+    def getThumbnailString(self):
+        thumbnail = "thumbnails/"
+        for n in range(0, len(self.imgStringSplit) - 1):
+            thumbnail += self.imgStringSplit[n] + "."
+        thumbnail +=  "thumbnail." + self.imgStringSplit[-1]
+
+        return thumbnail
 
     def updateThumbnail(self):
         img = Image.open(self.image)
@@ -71,5 +80,5 @@ myImage.updateThumbnail()
 
 
 onlyfiles = [f for f in listdir() if isfile(join(f))]
-print(onlyfiles[1:])
+print(onlyfiles[2:])
 
