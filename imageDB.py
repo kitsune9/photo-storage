@@ -5,20 +5,24 @@ from PIL import Image
 
 from os import listdir
 from os.path import isfile, join
+from os import remove
+from os import mkdir
 
 
 class StoredImage:
     def __init__(self, imgString):
-        self.imgStringSplit = imgString.split(".")
+
         self.image = imgString
-        self.thumbnail = self.getThumbnailString()
+        self.thumbnail = self.getThumbnailString(imgString)
 
 
         self.tagList = []
 
+        self.updateThumbnail()
+
         #testing
-        print(self.image)
-        print(self.thumbnail)
+        print("reading: " + self.image)
+        print("created file: " + self.thumbnail)
         print()
 
     def addTag(self, tagString):
@@ -35,11 +39,13 @@ class StoredImage:
     def getTags(self):
         return self.tagList
 
-    def getThumbnailString(self):
+    def getThumbnailString(self, imgString):
+        imgStringSplit = imgString.split(".")
+
         thumbnail = "thumbnails/"
-        for n in range(0, len(self.imgStringSplit) - 1):
-            thumbnail += self.imgStringSplit[n] + "."
-        thumbnail +=  "thumbnail." + self.imgStringSplit[-1]
+        for n in range(0, len(imgStringSplit) - 1):
+            thumbnail += imgStringSplit[n] + "."
+        thumbnail +=  "thumbnail." + imgStringSplit[-1]
 
         return thumbnail
 
@@ -48,15 +54,15 @@ class StoredImage:
         size = img.size # (w, h)
 
 
-        if(size[0] > size[1]):
-            rate = 250 / size[0]
+        if(size[0] < size[1]):
+            rate = 250 / float(size[0])
             adjustedSize = (250, rate*size[1])
             img.thumbnail(adjustedSize)
             img.save(self.thumbnail)
 
 
         else:
-            rate = 250 / size[1]
+            rate = 250 / float(size[1])
             adjustedSize = (rate * size[0], 250)
             img.thumbnail(adjustedSize)
             img.save(self.thumbnail)
@@ -69,16 +75,64 @@ class StoredImage:
 
 
 class StringOfStoredImages:
-    pass
+    def __init__(self):
+        self.storedImgNamesList = [] # names as Strings
+        self.storedImgList = [] # StoredImage Objects
+        self.availableTags = {} # {tagName : quantity}
+
+    def pushImage(self, imgName):
+        self.storedImgList.append(StoredImage(imgName))
+        self.storedImgNamesList.append(imgName)
+
+    def removeImage(self, imgName):
+        if(imgName in self.storedImgNamesList):
+            index = self.storedImgNamesList.index(imgName)
+            remove(self.storedImgList[index].thumbnail) # removes thumbnail file
+            self.storedImgList.pop(index)
+            self.storedImgNamesList.remove(imgName)
+
+
+    def clearList(self):
+        for name in self.storedImgList:
+            self.removeImage(name)
+
+    def importList(self): # how to export/save?
+        pass
+
+    def saveList(self):
+        pass
+
+    def getTagList(self):
+        for tagName in self.availableTags:
+            print(tagName)
 
 
 
 
-myImage = StoredImage("ilmina.jpg")
-myImage.updateThumbnail()
 
 
 
-onlyfiles = [f for f in listdir() if isfile(join(f))]
-print(onlyfiles[2:])
+
+
+groupOfImages = StringOfStoredImages()
+
+
+onlyfiles = [f for f in listdir(".") if isfile(join(f))]
+
+
+for name in onlyfiles:
+    if ("thumbnails" not in listdir()):
+        mkdir("thumbnails")
+
+    nameSplit = name.split(".")
+    if(     nameSplit[-1].lower() != "jpg" and # supported formats
+            nameSplit[-1].lower() != "png" and
+            nameSplit[-1].lower() != "gif" and
+            nameSplit[-1].lower() != "webp" and
+            nameSplit[-1].lower() != "bmp"):
+        pass
+    else:
+        groupOfImages.pushImage(name)
+
+
 
