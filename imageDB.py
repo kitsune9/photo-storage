@@ -108,7 +108,7 @@ onlyfiles = [f for f in listdir(".") if isfile(join(f))]
 
 
 for name in onlyfiles:
-    if ("thumbnails" not in listdir()):
+    if ("thumbnails" not in listdir(".")):
         mkdir("thumbnails")
 
     nameSplit = name.split(".")
