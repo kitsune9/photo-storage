@@ -67,13 +67,6 @@ class StoredImage:
             img.thumbnail(adjustedSize)
             img.save(self.thumbnail)
 
-
-
-
-
-
-
-
 class StringOfStoredImages:
     def __init__(self):
         self.storedImgNamesList = [] # names as Strings
@@ -108,12 +101,6 @@ class StringOfStoredImages:
 
 
 
-
-
-
-
-
-
 groupOfImages = StringOfStoredImages()
 
 
@@ -133,6 +120,7 @@ for name in onlyfiles:
         pass
     else:
         groupOfImages.pushImage(name)
+
 
 
 
